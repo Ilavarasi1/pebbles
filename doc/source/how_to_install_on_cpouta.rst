@@ -5,14 +5,22 @@ These are step by step instructions on how to launch a Pebbles server on
 cPouta IaaS cloud (https://research.csc.fi/pouta-iaas-cloud). We assume that you are
 familiar with the cPouta service. Horizon web interface will be used as an example.
 
-First we create a security group, then launch a server and finally install the software
+There are two ways to install pebbles server on cPouta:
+
+1. Direct installation through bash script(Quick but Deprecated - Use at your own risk)
+2. Deploying pebbles using ansibile playbook with HEAT 
+
+1. Installation through bash script:
+====================================
+
+First we create a security group(set of rules detailing the traffic allowed), then launch a server and finally install the software
 using ssh interactive session.
 
 Part 1: Launch the server
-=========================
+-------------------------
 
 Prerequisites
--------------
++++++++++++++
 
 * First log in to https://pouta.csc.fi
 
@@ -22,7 +30,7 @@ Prerequisites
   (Access and Security -> Key Pairs)
 
 Create a security group for the server
---------------------------------------
+++++++++++++++++++++++++++++++++++++++
 
 * In case you are a member of multiple projects in cPouta, select the desired
   project in the project selection drop down box on the top of the page 
@@ -39,7 +47,7 @@ Create a security group for the server
 
 
 Boot the server
----------------
++++++++++++++++
 
 We'll next create the server VM. It will be based on CentOS-7.
 
@@ -60,7 +68,7 @@ We'll next create the server VM. It will be based on CentOS-7.
 * Post-Creation and Advanced tabs can be skipped
 
 Assign a public IP
-------------------
+++++++++++++++++++
 
 * Go to (Instances) and click More on pb_server instance row. Select 'Associate floating IP'
 
@@ -70,7 +78,7 @@ Assign a public IP
  
 
 Download machine to machine OpenStack RC -file
-----------------------------------------------
+++++++++++++++++++++++++++++++++++++++++++++++
 
 * Log out and log in to https://pouta.csc.fi again, this time using your
   machine to machine credentials
@@ -79,7 +87,7 @@ Download machine to machine OpenStack RC -file
   File'. Save the file to a known location on your local computer
   
 Part 2: Install software
-==============================================
+------------------------
 
 Open ssh connection to the server::
 
@@ -113,21 +121,20 @@ when asked for) and continue installation::
 
     
 Part 3: Quick start using the software
-======================================
+--------------------------------------
 
 Here is list of tasks for a quick start. 
 
 
 Set admin credentials
----------------------   
++++++++++++++++++++++
 
 The installation script will print out initialization URL at the end of the
 installation. Navigate to that, set the admin credentials and log in as an
-admin. If you're using the ansible script you won't see the url, it is of the
-format https://pebbles.example.org/#/initialize .
+admin.
 
 Configure essentials
---------------------
+++++++++++++++++++++
 
 One should change at least the following settings
 
@@ -138,15 +145,14 @@ One should change at least the following settings
 
 See  :py:class:`pebbles.config.BaseConfig`  for all the options.
 
+Enable a driver/Plugin
+----------------------
 
-Enable a driver
-----------------
-
-By default, only a dummy test driver is enabled. To add more drivers for
-provisioning different resources, you need to edit the _PLUGIN_WHITELIST_
+Blueprint templates can be created based on the drivers. At present there are OpenStack, Docker and Openshift drivers. They are given using the variable PLUGIN_WHITELIST. By default, only a dummy test driver is enabled when pebbles software is installed through bash script. 
+To add more drivers for provisioning different resources, you need to edit the _PLUGIN_WHITELIST_
 variable. Change this variable to e.g.
 
-    PLUGIN_WHITELIST: OpenStackDriver DummyDriver
+    PLUGIN_WHITELIST: OpenStackDriver DummyDriver DockerDriver
 
 The plugin infrastructure running in 'worker' container will periodically
 check the plugin whitelist and upload driver configurations to the API server
@@ -155,8 +161,10 @@ will dynamically include VM images and flavors that are available for the
 cPouta project.  Refresh the page after a minute or two, and the *Plugins*
 list on top of the page should include the driver of your choice.
 
-Create a test blueprint
------------------------
+More details about the drivers and their configurations are found in (Driver page link)
+
+Create a test blueprint for Openstack driver:
++++++++++++++++++++++++++++++++++++++++++++++
 
 Click 'Create Blueprint' next to OpenStackDriver in the plugin list and you
 are presented by a dialog for configuring the new blueprint. We'll create a
@@ -180,10 +188,12 @@ Also add a Customization script, just for test purposes:
     #!/bin/bash
     touch /tmp/hello_from_blueprint_config
 
-Save the new blueprint and enable it in the Blueprints list.
+Save the new blueprint and activate it in the Blueprints list.
+
+Detailed information about OpenStack driver configurations are in (Link?)
 
 Launch a test instance
-----------------------
+++++++++++++++++++++++
 
 Go to 'Dashboard' tab. If you have not uploaded your ssh public key yet,
 you'll see a notice with a link to do so in the Blueprint list. Click the link
@@ -206,21 +216,19 @@ Check if our boot time customization script worked:
 
 
 Enable Docker Driver
---------------------
+++++++++++++++++++++
 Enabling DockerDriver requires a bit more preparation, see `Docker driver
 documentation <http://cscfi.github.io/pebbles/README_docker_driver.html>`_
 
 Enable OpenShift Driver
------------------------
++++++++++++++++++++++++
 
 An OpenShift driver exists, but it's documentation is still incomplete. ToDo:
 a list to the documentation when it is done.
 
 
-
-
 Part 4: Open access to users
-============================
+----------------------------
 
 Once you have set the admin credentials and checked that the system works, you
 can open the firewall to all the users. 
@@ -233,7 +241,7 @@ can open the firewall to all the users.
   certain subnet, use that instead of 0.0.0.0/0
 
 Part 5: Administrative tasks and troubleshooting
-================================================
+------------------------------------------------
 
 # Notes on container based deployment
 
@@ -291,3 +299,11 @@ attach               $ tmux attach (or att)
 list sessions        $ tmux list-sessions
 kill a session       $ tmux kill-session -t status
 ==================   =============================
+
+2. Deployment through ansible-playbook using HEAT:
+==================================================
+
+Pebbles server can be deployed through ansible playbook. The repository containing depoyment code and instructions are in csc/pebbles-deploy.
+
+When deployment is run successfully, admin credentials can be initialized using https://<ip-address-of-pebblesserver>/#initialize
+

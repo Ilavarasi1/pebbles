@@ -14,9 +14,8 @@
 Pebbles
 ****************
 
-**Pebbles** (formerly Pouta Blueprints) is a frontend to manage cloud
-resources and lightweight user accounts. Currently supported resource types
-are:
+**Pebbles** (formerly Pouta Blueprints) is a tool to provision and manage resources in the cloud. 
+Currently supported resource types are:
 
 - `OpenStack driver`_,
   which can be used to launch instances on OpenStack cloud.
@@ -31,8 +30,11 @@ Documentation
 `Documentation hosted on GitHub
 <http://cscfi.github.io/pebbles/>`_.
 
+`Documentation hosted on readthedocs
+<http://pebbles.readthedocs.io/en/latest/>`_.
+
 The documentation is generated from Sphinx RST documentation under doc/ and
-inline in the code.. Convention is to have as much as possible as docstrings
+inline in the code. Convention is to write docstrings as much as possible
 close to the code that implements said functionality. Module level docstrings
 can be used to give end-user readable generic description of system parts.
 Things that aren't naturally tied to a code module or artefact can be created
@@ -49,12 +51,13 @@ graphviz for creating system structure graphs.
 
 The documentation is hosted in GitHub pages and built using `Travis-Sphinx`_.
 Travis-Sphinx requires your documentation to be 100% correct RST syntax to
-build so it's worth the effort to run
+build so it's worth the effort to run the following before pushing nontrivial 
+documentation changes for Travis testing. ::
 
         $ workon pb-doc
+        $ yum install graphviz
         (pb-doc)$ travis-sphinx --branches=doc/sphinx --source=doc/source build
 
-Before pushing nontrivial documentation changes for Travis testing.
 
 .. _OpenStack driver: pebbles/drivers/provisioning/openstack_driver.py
 .. _Docker driver: pebbles/drivers/provisioning/README_docker_driver.md
