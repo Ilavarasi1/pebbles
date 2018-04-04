@@ -1456,10 +1456,18 @@ class FlaskApiTestCase(BaseTestCase):
         response = self.make_request(path='/api/v1/instances/%s' % self.known_instance_id)
         self.assert_401(response)
         # Authenticated
-        response = self.make_authenticated_user_request(path='/api/v1/instances/%s' % self.known_instance_id)
+        response = self.make_authenticated_user_request(
+            method='GET',
+            path='/api/v1/instances/%s' % self.known_instance_id,
+            data=json.dumps({'check_provisioning': False})
+        )
         self.assert_200(response)
         # Admin
-        response = self.make_authenticated_admin_request(path='/api/v1/instances/%s' % self.known_instance_id)
+        response = self.make_authenticated_admin_request(
+            method='GET',
+            path='/api/v1/instances/%s' % self.known_instance_id,
+            data=json.dumps({'check_provisioning': False})
+        )
         self.assert_200(response)
 
     def test_delete_instance(self):
@@ -1559,7 +1567,9 @@ class FlaskApiTestCase(BaseTestCase):
         self.assertEquals(response_get.json[0]['timestamp'], epoch_time)
 
         response_instance_get = self.make_authenticated_user_request(
-            path='/api/v1/instances/%s' % self.known_instance_id
+            method='GET',
+            path='/api/v1/instances/%s' % self.known_instance_id,
+            data=json.dumps({'check_provisioning': False})
         )
         self.assert_200(response_instance_get)
         self.assertEquals(response_instance_get.json['logs'][0]['timestamp'], epoch_time)
