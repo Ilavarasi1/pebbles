@@ -217,6 +217,7 @@ Check if our boot time customization script worked:
 
 Enable Docker Driver
 ++++++++++++++++++++
+
 Enabling DockerDriver requires a bit more preparation, see `Docker driver
 documentation <http://cscfi.github.io/pebbles/README_docker_driver.html>`_
 

@@ -49,9 +49,9 @@ Building the documentation can be one as follows ::
 Will build the html documentation under doc/build. There is a requirement of
 graphviz for creating system structure graphs.
 
-The documentation is hosted in GitHub pages and built using `Travis-Sphinx`_.
+The documentation hosted in GitHub pages are built using `Travis-Sphinx`_.
 Travis-Sphinx requires your documentation to be 100% correct RST syntax to
-build so it's worth the effort to run the following before pushing nontrivial 
+build successfully so it's worth the effort to run the following before pushing nontrivial 
 documentation changes for Travis testing. ::
 
         $ workon pb-doc
@@ -62,5 +62,5 @@ documentation changes for Travis testing. ::
 .. _OpenStack driver: pebbles/drivers/provisioning/openstack_driver.py
 .. _Docker driver: pebbles/drivers/provisioning/README_docker_driver.md
 .. _Pouta Virtualcluster: https://github.com/CSCfi/pouta-virtualcluster
-.. _Travis Sphinx: https://github.com/Syntaf/travis-sphinx
+.. _Travis-Sphinx: https://github.com/Syntaf/travis-sphinx
 

@@ -3,9 +3,9 @@
 Admin guide
 ===========
 
-This guide is aimed at administrators and developers, as we don't have a
+This guide is aimed at administrators and developers, as we do not have a
 separate dev guide at the moment. Developers are expected to also be able to
-admin the system.
+administrate the system.
 
 Contents:
 
@@ -17,7 +17,6 @@ Contents:
    database_migrations
    configuring
    drivers
-   README_docker_driver
    dev_environment
    documenting
    monitoring

@@ -1,63 +1,80 @@
+:orphan:
+
 DockerDriver
 ************
-
-
-
 
 Getting started
 ===============
 
-After following the standard install instructions the following additional steps
-are required to activate docker driver:
+After following the standard install instructions and when DockerDriver is enabled using PLUGIN_WHITELIST, the driver can be seen in the 'Configure' tab under 'Plugins' section. Additional steps are required to activate docker driver.
 
-Pull a docker image
--------------------
 
-At the time of writing, docker driver will upload images to new notebook hosts (instead of hosts pulling them
-from a private Docker registry). The images will need to be downloaded (from dockerhub) and placed in server's 
-/var/lib/pb/docker_images -directory:
+Step 1: Pull a docker image:
+============================
 
-As cloud-user on the server, pull the images::
+First, the docker images will need to be downloaded (using docker pull from dockerhub) and placed in pebbles server's /var/lib/pb/docker_images -directory. At the time of writing, docker driver will upload the image saved in this directory to new host/pool VMs (instead of hosts pulling them from a private Docker registry).
+
+As cloud-user on the pebbles server, pull the images e.g::
     
     docker pull rocker/rstudio
 
-Then save the image to image directory (/var/lib/pb/docker_images by
-default)::
+Then save the image to image directory (/var/lib/pb/docker_images by default)::
 
     docker save rocker/rstudio > /var/lib/pb/docker_images/rocker.rstudio.img
 
-It's essential that you write directly to /var/lib/pb/docker_images/ so the
-SELinux labels are created properly.
+It's essential that you write directly to /var/lib/pb/docker_images/ so the SELinux labels are created properly.
 
 .. note::
-      Images from the image directory are pushed to notebook hosts only when they are being
-      prepared. This limitation will be removed in the future, see
-      https://github.com/CSCfi/pebbles/issues/358
+         Images from the image directory are pushed to notebook hosts only when they are being prepared.
 
 .. note::
-      All images are pushed to each notebook host (which may host several
-      containers) when host is prepared. This means that less is more in the
-      number of images.
-
-Configure the driver
---------------------
-
-Change the following configuration variables in the web configuration page visible for admins.::
-
-    PLUGIN_WHITELIST: DockerDriver
-    DD_SHUTDOWN_MODE: False
-
-Once you enable the driver, you can take a look at the tmux status window mentioned in how_to_install_on_cpouta.md, 
-window number 2 (CTRL-b 2) how the provisioning of notebook hosts in the pool is coming along.
-
-There is a PREFIX setting that sets the prefix to use when generating pool
-hosts.
+         All images are pushed to each notebook pool hosts (which may host several containers) when the host is prepared to be ACTIVE.
 
 
-Create a test blueprint
-=======================
+Step 2: Configure the Docker Driver:
+==========================================
 
-Go to Web UI, select 'Configure' tab, click on 'Create Blueprint' next to DockerDriver
+In the web-ui , go to 'Dashboard', then click 'Driver Configs' tab. This lists the configurations specific to DockerDriver and the hosts.
+
+.. automodule:: pebbles.drivers.provisioning.docker_driver
+
+As an Admin, We can check the number of pool hosts and their details in the UI by clicking 'Dashboard' and then 'Driver Hosts' tab. It is also possible to update some configurations of individual pool hosts by using 'Update Config' button.
+
+Step 3: Create a Docker Driver Plugin 
+=====================================
+
+Go to web-UI, click 'Configure', then Click "Create Template" next to DockerDriver under 'Plugins'. Now the configurations for this specific template can be done.
+
+Docker instance configs:
+------------------------
+
+**Name:** Name of the template  
+**description:** Description  
+**docker image:** You can choose the image that you want to upload to the pool hosts. The images listed here are from /var/lib/pb/docker_images directory.  
+**internal_port:**  
+**launch_command:**  
+**environment variables for docker, separated by space:** Here you can customise the environment for the users. You can clone a github repo, download data sets, install custom libraries through bash scripts. e.g  
+**Show the required password/token (if any), to the user:**  
+**memory_limit:**  
+**consumed_slots:**   
+**Maximum instances per user:** The number of instances any user is allowed to launch at a time.  
+**Maximum life-time (days hours mins):** Lifetime of the instances launched.  
+**Cost multiplier (default 1.0):**  
+**needs_ssh_keys:**  
+
+**Proxy Options:**  
+
+*Bypass Token Authentication (Jupyter Notebooks):*  
+*Redirect the proxy url:*  
+*Rewrite the proxy url:*  
+*Set host header:*  
+
+You can also let group owners to override these configurations by checking "Select Attributes to override".  
+
+Step 4: Create a blueprint template  
+===================================
+
+Go to Web UI, select 'Configure' tab, click on 'Create Blueprint' next to DockerDriver  
 
 Settings:
 
@@ -70,8 +87,8 @@ Settings:
 Save and activate, go to 'Dashboard' and launch an instance. Once the instance is running, click 'Open in Browser'
 
 
-Shutting down the server
-========================
+Step 5: Shutting down the server
+================================
 
 .. DANGER::
     DockerDriver needs to be in shutdown mode before shutting down the system. Otherwise there is a risk of leaving zombie servers!
@@ -85,8 +102,8 @@ and the driver will delete the resources in the pool. In case there is an runawa
 empty, you will have to manually delete the VM, security group and volume from OpenStack.
 
 
-Custom blueprints
-=================
+Step 6: Custom blueprints
+=========================
 
 There is/will be a repository with the notebook images we use. It's located at
 TBD. To build one of the images clone the repo and run::
